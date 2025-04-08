@@ -73,7 +73,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     }
     
     .nav-links a:hover, .nav-links a.active {
-      color: #ff4081;
+      color: #90caf9;
     }
     
     .nav-links a.active::after {
@@ -83,7 +83,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       left: 0;
       width: 100%;
       height: 2px;
-      background-color: #ff4081;
+      background-color: #90caf9;
     }
     
     .content {

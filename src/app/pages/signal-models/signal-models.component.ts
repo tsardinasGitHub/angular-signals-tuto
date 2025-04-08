@@ -2,150 +2,158 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { signal } from '@angular/core';
+import { signal, computed } from '@angular/core';
+
+interface UserProfile {
+  name: string;
+  email: string;
+  active: boolean;
+  lastUpdated: Date;
+  preferences?: UserPreferences;
+}
+
+interface UserPreferences {
+  theme: string;
+  notifications: boolean;
+  language: string;
+}
 
 @Component({
   selector: 'app-signal-models',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
-  template: `
-    <div class="container">
-      <h1>Signal Models</h1>
-      <p>Using signals to manage and update complex models</p>
-      
-      <div class="demo-section">
-        <h2>User Profile Example</h2>
-        
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input 
-            id="name" 
-            type="text" 
-            [(ngModel)]="name" 
-            (blur)="updateProfile()"
-          />
-        </div>
-        
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input 
-            id="email" 
-            type="email" 
-            [(ngModel)]="email" 
-            (blur)="updateProfile()"
-          />
-        </div>
-        
-        <div class="form-group">
-          <label>
-            <input 
-              type="checkbox" 
-              [(ngModel)]="isActive" 
-              (change)="updateProfile()"
-            />
-            Active
-          </label>
-        </div>
-        
-        <div class="card">
-          <h3>User Profile</h3>
-          <pre>{{ userProfile() | json }}</pre>
-        </div>
-      </div>
-      
-      <div class="navigation">
-        <a routerLink="/signal-inputs">← Back to Signal Inputs</a>
-      </div>
-    </div>
-  `,
-  styles: [
-    `.container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    h1 {
-      color: #3f51b5;
-    }
-    
-    .demo-section {
-      margin: 20px 0;
-      padding: 20px;
-      background: #f5f5f5;
-      border-radius: 8px;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
-    
-    input[type="text"],
-    input[type="email"] {
-      width: 100%;
-      max-width: 300px;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 4px;
-      padding: 15px;
-      margin-top: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    pre {
-      background: #f8f9fa;
-      padding: 10px;
-      border-radius: 4px;
-      overflow: auto;
-    }
-    
-    .navigation {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    a {
-      color: #3f51b5;
-      text-decoration: none;
-    }
-    
-    a:hover {
-      text-decoration: underline;
-    }`
-  ]
+  templateUrl: './signal-models.component.html',
+  styleUrls: ['./signal-models.component.scss']
 })
 export class SignalModelsComponent {
-  // Form fields
+  // Template code examples
+  basicSignalExample = `// Create a signal with a complex object
+const userProfile = signal({
+  name: 'John Doe',
+  email: 'john@example.com',
+  active: true,
+  lastUpdated: new Date()
+});
+
+// Read a property from the object
+console.log(userProfile().name); // "John Doe"`;
+
+  dontDoExample = `// DON'T mutate signal value directly - won't trigger updates!
+userProfile().name = 'Jane Doe';  
+userProfile().active = false;`;
+
+  doDoExample = `// DO create new objects when updating
+userProfile.update(profile => ({
+  ...profile,           // Copy all existing properties
+  name: 'Jane Doe',     // Override specific properties
+  active: false,
+  lastUpdated: new Date()
+}));`;
+
+  nestedUpdateExample = `// Update nested object properties
+userProfile.update(profile => ({
+  ...profile,
+  preferences: {
+    ...profile.preferences,  // Preserve other preference properties
+    theme: 'dark'            // Update specific nested property
+  },
+  lastUpdated: new Date()
+}));`;
+
+  modelClassExample = `export class UserProfileModel {
+  // Private signals for internal state
+  private _data = signal<UserProfile>({
+    name: '',
+    email: '',
+    active: false,
+    lastUpdated: new Date()
+  });
+  
+  // Public readable signals
+  readonly profile = this._data.asReadonly();
+  
+  // Computed properties
+  readonly displayName = computed(() => {
+    const profile = this._data();
+    return profile.name || 'Anonymous User';
+  });
+  
+  readonly isActive = computed(() => this._data().active);
+  
+  // Methods for updating the model
+  updateName(name: string) {
+    this._data.update(profile => ({
+      ...profile,
+      name,
+      lastUpdated: new Date()
+    }));
+  }
+  
+  setActiveStatus(active: boolean) {
+    this._data.update(profile => ({
+      ...profile,
+      active,
+      lastUpdated: new Date()
+    }));
+  }
+  
+  // Method for bulk updates
+  updateProfile(updates: Partial<UserProfile>) {
+    this._data.update(profile => ({
+      ...profile,
+      ...updates,
+      lastUpdated: new Date()
+    }));
+  }
+}`;
+  
+  // Form fields for user profile
   name = 'John Doe';
   email = 'john@example.com';
   isActive = true;
   
+  // Form fields for user preferences
+  theme = 'light';
+  notifications = false;
+  
   // Signal for user profile
-  userProfile = signal({
+  userProfile = signal<UserProfile>({
     name: this.name,
     email: this.email,
     active: this.isActive,
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
+    preferences: {
+      theme: this.theme,
+      notifications: this.notifications,
+      language: 'en'
+    }
   });
   
+  // Computed value based on the selected theme
+  isDarkTheme = computed(() => {
+    return this.userProfile().preferences?.theme === 'dark';
+  });
+  
+  // Method to update the user profile
   updateProfile() {
     this.userProfile.update(profile => ({
       ...profile,
       name: this.name,
       email: this.email,
       active: this.isActive,
+      lastUpdated: new Date()
+    }));
+  }
+  
+  // Method to update user preferences
+  updatePreferences() {
+    this.userProfile.update(profile => ({
+      ...profile,
+      preferences: {
+        ...profile.preferences as UserPreferences,
+        theme: this.theme,
+        notifications: this.notifications
+      },
       lastUpdated: new Date()
     }));
   }

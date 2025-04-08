@@ -1,0 +1,181 @@
+<div class="tutorial-container">
+  <h1>Signal Effects</h1>
+  <p class="intro">Effects allow you to run side effects in response to signal changes, providing a clean way to handle tasks outside Angular's reactive rendering system.</p>
+  
+  <div class="section">
+    <h2>What Are Effects?</h2>
+    <p>
+      An effect is a special reactive function that:
+    </p>
+    <ul>
+      <li>Automatically tracks signals that it reads</li>
+      <li>Re-runs whenever any of those signals change</li>
+      <li>Is perfect for synchronizing signal state with external systems</li>
+    </ul>
+    
+    <div class="code-example">
+      <pre>
+import &#123; signal, effect, computed &#125; from '&#64;angular/core';
+
+// Create a signal
+const count = signal(0);
+
+// Create an effect that uses the signal
+effect(() => &#123;
+  console.log(`The count is: $&#123;count()&#125;`);
+  // This will run initially and then again
+  // whenever count changes
+&#125;);
+      </pre>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>Common Use Cases for Effects</h2>
+    <ul class="use-cases">
+      <li>
+        <strong>Document/Browser APIs</strong> - Update the document title, local storage, or other browser APIs
+      </li>
+      <li>
+        <strong>Analytics</strong> - Send analytics events when certain values change
+      </li>
+      <li>
+        <strong>External libraries</strong> - Sync state with third-party libraries that aren't integrated with Angular's change detection
+      </li>
+      <li>
+        <strong>Logging</strong> - Log important state changes for debugging
+      </li>
+      <li>
+        <strong>Complex animations</strong> - Trigger animations based on state changes
+      </li>
+    </ul>
+  </div>
+  
+  <div class="section">
+    <h2>Effect Lifecycle</h2>
+    <p>
+      Effects are created using the <code>effect()</code> function and have the following lifecycle:
+    </p>
+    <ol>
+      <li><strong>Creation:</strong> The effect runs once immediately when created</li>
+      <li><strong>Tracking:</strong> Angular tracks which signals are read during execution</li>
+      <li><strong>Re-execution:</strong> The effect automatically re-runs when any of those signals change</li>
+      <li><strong>Cleanup:</strong> Effects created in components are automatically destroyed when the component is destroyed</li>
+    </ol>
+    
+    <div class="note">
+      <strong>Important:</strong> For effects created outside component context, you should manually clean them up using the <code>destroy()</code> method returned by <code>effect()</code>.
+    </div>
+  </div>
+  
+  <div class="demo-section">
+    <h2>Interactive Demo: Document Title Effect</h2>
+    <p>
+      This demo uses an effect to update the browser tab title whenever the count changes.
+      Try changing the values below and look at your browser tab title.
+    </p>
+    
+    <div class="demo-card">
+      <div class="controls">
+        <p>
+          Current count: <strong>{{ count() }}</strong>
+        </p>
+        <div class="button-group">
+          <button (click)="decrement()">Decrement</button>
+          <button (click)="reset()">Reset</button>
+          <button (click)="increment()">Increment</button>
+        </div>
+        <div class="input-control">
+          <label for="title-prefix">Title prefix:</label>
+          <input 
+            id="title-prefix" 
+            type="text" 
+            [ngModel]="titlePrefix()" 
+            (ngModelChange)="updateTitlePrefix($event)"
+          />
+        </div>
+      </div>
+      
+      <div class="code-view">
+        <h3>Component Code:</h3>
+        <div class="code-example">
+          <pre>
+export class EffectComponent implements OnDestroy &#123;
+  // Signals
+  count = signal(0);
+  titlePrefix = signal('Count:');
+  
+  // Computed value that combines the prefix and count
+  fullTitle = computed(() => 
+    `$&#123;this.titlePrefix()&#125; $&#123;this.count()&#125;`
+  );
+  
+  // Effect for updating document title
+  private titleEffect = effect(() => &#123;
+    // This runs when component initializes and when 
+    // any of the signals read inside are changed
+    document.title = this.fullTitle();
+  &#125;);
+  
+  // Clean up the effect when component is destroyed
+  ngOnDestroy() &#123;
+    this.titleEffect.destroy();
+  &#125;
+&#125;
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>Comparing Effects and Computed Signals</h2>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Effects</th>
+          <th>Computed Signals</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Purpose</td>
+          <td>Side effects, external system integration</td>
+          <td>Derive values from other signals</td>
+        </tr>
+        <tr>
+          <td>Return value</td>
+          <td>None (void)</td>
+          <td>Returns a readable signal</td>
+        </tr>
+        <tr>
+          <td>Execution</td>
+          <td>Always runs when dependencies change</td>
+          <td>Lazy evaluation (only when read)</td>
+        </tr>
+        <tr>
+          <td>Caching</td>
+          <td>No caching</td>
+          <td>Caches result until dependencies change</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="section">
+    <h2>Best Practices for Effects</h2>
+    <ul>
+      <li><strong>Keep effects focused</strong> - Each effect should do one specific task</li>
+      <li><strong>Avoid modifying signals</strong> - Effects should respond to signal changes, not create cyclical updates</li>
+      <li><strong>Clean up resources</strong> - Return a cleanup function for any subscriptions or event listeners</li>
+      <li><strong>Avoid heavy computations</strong> - Effects run synchronously; use computed signals for complex calculations</li>
+      <li><strong>Handle errors</strong> - Effects should catch and handle potential errors</li>
+    </ul>
+  </div>
+  
+  <div class="navigation-links">
+    <a routerLink="/computed-signals">← Computed Signals</a>
+    <a routerLink="/signal-inputs">Signal Inputs →</a>
+  </div>
+</div> 
