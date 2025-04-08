@@ -1,0 +1,174 @@
+<div class="tutorial-container">
+  <h1>Signal Basics</h1>
+  <p>Signals are reactive values that notify consumers when they change, forming the core of Angular's reactive programming model.</p>
+  
+  <div class="section">
+    <h2>What Are Signals?</h2>
+    <p>
+      A signal is a wrapper around a value that notifies interested consumers when that value changes.
+      Signals can contain any value, from simple primitives to complex data structures.
+    </p>
+    
+    <p>
+      Signals provide three key capabilities:
+    </p>
+    <ul>
+      <li>
+        <strong>Read</strong> - Access the current value of a signal
+      </li>
+      <li>
+        <strong>Write</strong> - Update the value of a writable signal
+      </li>
+      <li>
+        <strong>Observe</strong> - Automatically react to changes in a signal's value
+      </li>
+    </ul>
+  </div>
+  
+  <div class="section">
+    <h2>Creating Signals</h2>
+    
+    <div class="code-example">
+      <pre>
+import {{ '{' }} signal {{ '}' }} from '&#64;angular/core';
+
+// Create a writable signal with an initial value
+const count = signal(0);
+      </pre>
+    </div>
+    
+    <p>
+      The <code>signal()</code> function creates a writable signal with the provided initial value.
+      The signal is a function that you can call to read its current value.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Reading Signal Values</h2>
+    
+    <div class="code-example">
+      <pre>
+// Call the signal as a function to read its value
+const currentCount = count(); // returns 0
+      </pre>
+    </div>
+    
+    <p>
+      To read a signal's value, you call the signal as a function. This returns the current value wrapped by the signal.
+      In templates, you also call the signal as a function: <code>{{ '{' }}{{ '{' }} someSignal() {{ '}' }}{{ '}' }}</code>
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Updating Signal Values</h2>
+    
+    <p>Writable signals provide two methods for updating their values:</p>
+    
+    <h3>Set</h3>
+    <div class="code-example">
+      <pre>
+// Replace the current value with a new value
+count.set(5); // count() is now 5
+      </pre>
+    </div>
+    
+    <h3>Update</h3>
+    <div class="code-example">
+      <pre>
+// Update based on the previous value
+count.update(value => value + 1); // count() is now 6
+      </pre>
+    </div>
+    
+    <p>
+      <code>set()</code> directly replaces the signal's value, while <code>update()</code> allows you to derive a new value based on the previous one.
+      The update function is useful for transformations like increments, toggles, or adding items to arrays.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Important: Working with Objects and Arrays</h2>
+    
+    <p>
+      When a signal contains an object or array, mutating that object directly <strong>will not</strong> trigger updates to consumers!
+      You must create a new object or array to trigger change detection.
+    </p>
+    
+    <div class="code-example">
+      <pre>
+// DON'T do this - it won't notify consumers
+const user = signal({{ '{' }} name: 'Alice', age: 25 {{ '}' }});
+user().age = 26; // Mutation! The signal's consumers won't be notified
+
+// DO this instead
+user.update(value => ({{ '{' }} ...value, age: 26 {{ '}' }})); // Creates a new object
+      </pre>
+    </div>
+    
+    <p>
+      For arrays, use immutable array methods like <code>map</code>, <code>filter</code>, and spread syntax instead of <code>push</code>, <code>pop</code>, or direct index assignment.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Signal Benefits</h2>
+    
+    <p>Signals provide several advantages over traditional reactive patterns in Angular:</p>
+    
+    <ul>
+      <li>
+        <strong>Fine-grained reactivity</strong> - Only components that actually consume a changed signal will update
+      </li>
+      <li>
+        <strong>Explicit dependencies</strong> - Signal dependencies are tracked automatically when you call a signal
+      </li>
+      <li>
+        <strong>Synchronous updates</strong> - Changes to signals propagate immediately to their consumers
+      </li>
+      <li>
+        <strong>Better debugging</strong> - It's easier to track down the source of changes in your application
+      </li>
+    </ul>
+  </div>
+  
+  <div class="demo-section">
+    <h2>Interactive Demo</h2>
+    <p>This counter demonstrates basic signal operations using set() and update().</p>
+    <p>Counter value: <strong>{{ counterValue() }}</strong></p>
+    <div class="button-group">
+      <button (click)="decrement()">Decrement</button>
+      <button (click)="reset()">Reset</button>
+      <button (click)="increment()">Increment</button>
+    </div>
+    
+    <div class="code-view">
+      <h3>Component Code:</h3>
+      <div class="code-example">
+        <pre>
+export class SignalBasicsComponent {{ '{' }}
+  // Create a writable signal with initial value 0
+  counterValue = signal(0);
+  
+  increment() {{ '{' }}
+    // Update the signal based on its previous value
+    this.counterValue.update(value => value + 1);
+  {{ '}' }}
+  
+  decrement() {{ '{' }}
+    this.counterValue.update(value => value - 1);
+  {{ '}' }}
+  
+  reset() {{ '{' }}
+    // Set the signal to a specific value
+    this.counterValue.set(0);
+  {{ '}' }}
+{{ '}' }}
+        </pre>
+      </div>
+    </div>
+  </div>
+  
+  <div class="navigation">
+    <a routerLink="/computed-signals">Next: Computed Signals →</a>
+  </div>
+</div> 

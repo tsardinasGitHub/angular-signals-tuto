@@ -1,0 +1,162 @@
+<div class="tutorial-container">
+  <div class="section-header">
+    <h1>Signal Inputs in Angular</h1>
+    <p class="section-description">
+      Learn how to use Angular's new input() and model() functions with signals for component communication
+    </p>
+  </div>
+
+  <div class="tutorial-section">
+    <h2>What are Signal Inputs?</h2>
+    <p>
+      Signal Inputs are a new way to declare component inputs in Angular, introduced in Angular 17.
+      They leverage the reactivity system of signals to provide a more concise and type-safe way to
+      define component inputs compared to the traditional &#64;Input() decorator.
+    </p>
+
+    <h3>Benefits of Signal Inputs</h3>
+    <ul class="feature-list">
+      <li>More concise syntax for defining inputs</li>
+      <li>Better type safety with required and optional inputs</li>
+      <li>Built-in transform functions for input values</li>
+      <li>Seamless integration with Angular's signals for reactive programming</li>
+      <li>Two-way binding support with model() signals</li>
+    </ul>
+  </div>
+
+  <div class="tutorial-section">
+    <h2>Declaring Signal Inputs</h2>
+    
+    <div class="code-card">
+      <h3>Required Inputs</h3>
+      <p>
+        Signal inputs can be marked as required, which ensures they must be provided by the parent component.
+      </p>
+      <pre class="code-example">{{requiredInputExample}}</pre>
+    </div>
+
+    <div class="code-card">
+      <h3>Optional Inputs with Default Values</h3>
+      <p>
+        You can provide default values for inputs that are optional:
+      </p>
+      <pre class="code-example">{{optionalInputExample}}</pre>
+    </div>
+
+    <div class="code-card">
+      <h3>Input Transform Functions</h3>
+      <p>
+        Signal inputs support transform functions that allow you to modify input values before they're used in the component:
+      </p>
+      <pre class="code-example">{{transformInputExample}}</pre>
+    </div>
+  </div>
+
+  <div class="tutorial-section">
+    <h2>Two-Way Binding with model()</h2>
+    <p>
+      The model() function creates a special type of signal that supports two-way binding with the parent component,
+      replacing the traditional &#64;Input() + &#64;Output() pattern.
+    </p>
+    
+    <div class="examples-grid">
+      <div class="code-card">
+        <h3>Traditional Two-Way Binding</h3>
+        <pre class="code-example">{{twoWayBindingOldExample}}</pre>
+      </div>
+      
+      <div class="code-card">
+        <h3>Signal-Based Two-Way Binding</h3>
+        <pre class="code-example">{{twoWayBindingModelExample}}</pre>
+      </div>
+    </div>
+
+    <div class="code-card">
+      <h3>Complete model() Example</h3>
+      <pre class="code-example">{{modelExample}}</pre>
+    </div>
+  </div>
+
+  <div class="tutorial-section">
+    <h2>Comparison with Traditional Inputs</h2>
+    
+    <div class="examples-grid">
+      <div class="code-card">
+        <h3>Traditional &#64;Input()</h3>
+        <pre class="code-example">{{traditionalInputExample}}</pre>
+      </div>
+      
+      <div class="code-card">
+        <h3>Signal-Based Inputs</h3>
+        <pre class="code-example">{{signalInputExample}}</pre>
+      </div>
+    </div>
+    
+    <p>
+      Signal inputs provide a more concise syntax and better type safety,
+      while maintaining backward compatibility with existing Angular applications.
+    </p>
+  </div>
+
+  <div class="tutorial-section">
+    <h2>Interactive Demo</h2>
+    <div class="interactive-demo">
+      <h3>User Profile Card with Signal Inputs</h3>
+      
+      <app-user-card
+        [name]="userName()"
+        [email]="userEmail()"
+        [joinDate]="userJoinDate()" 
+        [isPremium]="userIsPremium()"
+        [status]="userStatus()"
+        [isFollowing]="userIsFollowing()"
+        (isFollowingChange)="userIsFollowing.set($event)">
+      </app-user-card>
+      
+      <div class="demo-controls">
+        <div class="control-group">
+          <label for="role">Role:</label>
+          <select id="role" [ngModel]="userRole()" (ngModelChange)="userRole.set($event)">
+            <option *ngFor="let role of availableRoles" [value]="role">{{role}}</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label>
+            <input type="checkbox" [ngModel]="userVerified()" (ngModelChange)="userVerified.set($event)" />
+            Verified User
+          </label>
+        </div>
+        
+        <div class="control-group">
+          <button (click)="toggleFollow()" class="follow-button" [class.following]="isFollowingDemo()">
+            {{ isFollowingDemo() ? 'Unfollow' : 'Follow' }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="profile-display">
+        <div class="profile-header">
+          <h4>User Profile</h4>
+          <span class="status-badge">{{userStatusComputed()}}</span>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat">
+            <span class="stat-label">Followers</span>
+            <span class="stat-value">{{userFollowers()}}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Following</span>
+            <span class="stat-value">{{ isFollowingDemo() ? 'Yes' : 'No' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navigation-links">
+    <a [routerLink]="['/signal-basics']">← Signal Basics</a>
+    <a [routerLink]="['/computed-signals']">Computed Signals →</a>
+  </div>
+</div> 

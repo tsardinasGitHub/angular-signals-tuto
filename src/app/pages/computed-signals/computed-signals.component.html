@@ -1,0 +1,219 @@
+<div class="tutorial-container">
+  <h1>Computed Signals</h1>
+  <p>Computed signals derive values from other signals and update automatically when dependencies change.</p>
+  
+  <div class="section">
+    <h2>What Are Computed Signals?</h2>
+    <p>
+      A computed signal is a read-only signal that derives its value from other signals.
+      It automatically tracks its dependencies and updates whenever any of those dependencies change.
+    </p>
+    
+    <p>
+      Computed signals are powerful for:
+    </p>
+    <ul>
+      <li>Deriving data from other reactive state</li>
+      <li>Transforming or filtering data</li>
+      <li>Combining multiple signals into a new value</li>
+      <li>Calculating intermediate values in complex state logic</li>
+    </ul>
+  </div>
+  
+  <div class="section">
+    <h2>Creating Computed Signals</h2>
+    
+    <div class="code-example">
+      <pre>
+import {{ '{' }} signal, computed {{ '}' }} from '&#64;angular/core';
+
+// Create basic signals
+const price = signal(10.99);
+const quantity = signal(1);
+
+// Create a computed signal that depends on price and quantity
+const total = computed(() => price() * quantity());
+      </pre>
+    </div>
+    
+    <p>
+      The <code>computed()</code> function takes a computation function that calculates the derived value.
+      When you call a signal inside this function, the computed signal automatically tracks it as a dependency.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Reading Computed Signals</h2>
+    
+    <div class="code-example">
+      <pre>
+// Read the computed value just like any other signal
+console.log(total()); // 10.99
+      </pre>
+    </div>
+    
+    <p>
+      You read computed signals exactly like regular signals—by calling them as functions.
+      The difference is that the value will be recalculated if any of the signals it depends on have changed.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Automatic Dependency Tracking</h2>
+    
+    <p>
+      Computed signals automatically track the signals they depend on. When any dependency changes,
+      the computed signal's value is automatically recalculated.
+    </p>
+    
+    <div class="code-example">
+      <pre>
+quantity.set(5);      // Update a dependency
+console.log(total()); // 54.95 (automatically recalculated)
+      </pre>
+    </div>
+    
+    <p>
+      This dependency tracking is dynamic—it happens during the execution of the computation function.
+      If a condition changes which signals are accessed, the dependencies are updated accordingly.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Chaining Computed Signals</h2>
+    
+    <p>
+      Computed signals can depend on other computed signals, creating a chain of reactive computations.
+    </p>
+    
+    <div class="code-example">
+      <pre>
+const price = signal(10.99);
+const quantity = signal(1);
+const subtotal = computed(() => price() * quantity());
+const taxRate = signal(0.07);
+const tax = computed(() => subtotal() * taxRate());
+const total = computed(() => subtotal() + tax());
+      </pre>
+    </div>
+    
+    <p>
+      When a base signal changes, all dependent computed signals update in the correct order.
+      Angular ensures that each computed signal is only recalculated once, even if accessed multiple times.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Performance Optimization</h2>
+    
+    <p>
+      Computed signals are lazy and cached:
+    </p>
+    <ul>
+      <li>They only recalculate when one of their dependencies changes</li>
+      <li>They only recalculate when someone reads their value</li>
+      <li>The calculated value is cached until a dependency changes</li>
+    </ul>
+    
+    <p>
+      This means you can define complex computed values without worrying about performance—they'll
+      only recalculate when both necessary and actually used.
+    </p>
+  </div>
+  
+  <div class="section">
+    <h2>Common Use Cases</h2>
+    
+    <p>Computed signals are perfect for:</p>
+    <ul>
+      <li>Filtering arrays based on criteria</li>
+      <li>Sorting complex data</li>
+      <li>Calculating totals or statistics</li>
+      <li>Deriving UI states from multiple signals</li>
+      <li>Transforming data for display</li>
+    </ul>
+  </div>
+  
+  <div class="demo-section">
+    <h2>Interactive Demo</h2>
+    <p>
+      This shopping cart demonstrates how computed signals depend on and automatically update 
+      based on changes to other signals. Try changing the values to see the computed signals update.
+    </p>
+    
+    <div class="cart-demo">
+      <div class="cart-controls">
+        <div class="field">
+          <label>Quantity:</label>
+          <input type="number" [value]="quantity()" 
+                 (input)="updateQuantity($event)" min="1" max="10" />
+        </div>
+        
+        <div class="field">
+          <label>Price per unit:</label>
+          <input type="number" [value]="pricePerUnit()" 
+                 (input)="updatePrice($event)" min="1" />
+        </div>
+        
+        <div class="field">
+          <label>Tax rate (%):</label>
+          <input type="number" [value]="taxRate()" 
+                 (input)="updateTaxRate($event)" min="0" max="30" />
+        </div>
+      </div>
+      
+      <div class="cart-summary">
+        <h3>Cart Summary</h3>
+        <p>Quantity: <strong>{{ quantity() }}</strong></p>
+        <p>Price per unit: <strong>{{ pricePerUnit().toFixed(2) }}</strong></p>
+        <p>Subtotal: <strong>{{ subtotal().toFixed(2) }}</strong></p>
+        <p>Tax ({{ taxRate() }}%): <strong>{{ taxAmount().toFixed(2) }}</strong></p>
+        <p class="total">Total: <strong>{{ total().toFixed(2) }}</strong></p>
+      </div>
+    </div>
+    
+    <div class="code-view">
+      <h3>Component Code:</h3>
+      <div class="code-example">
+      <pre>
+export class ComputedSignalsComponent {{ '{' }}
+  // Base signals - these are the raw values that can change
+  quantity = signal(1);
+  pricePerUnit = signal(29.99);
+  taxRate = signal(7);
+  
+  // Computed signals - these derive their values from the base signals
+  subtotal = computed(() => {{ '{' }}
+    return this.quantity() * this.pricePerUnit();
+  {{ '}' }});
+  
+  taxAmount = computed(() => {{ '{' }}
+    return this.subtotal() * (this.taxRate() / 100);
+  {{ '}' }});
+  
+  total = computed(() => {{ '{' }}
+    return this.subtotal() + this.taxAmount();
+  {{ '}' }});
+{{ '}' }}
+      </pre>
+      </div>
+      
+      <p>Notice how the computed signals form a dependency chain:</p>
+      <ul>
+        <li><code>subtotal</code> depends on <code>quantity</code> and <code>pricePerUnit</code></li>
+        <li><code>taxAmount</code> depends on <code>subtotal</code> and <code>taxRate</code></li>
+        <li><code>total</code> depends on <code>subtotal</code> and <code>taxAmount</code></li>
+      </ul>
+      
+      <p>
+        When any base signal changes, all dependent computed signals update automatically in the correct order.
+        This creates a reactive graph of values that stays consistent with minimal code.
+      </p>
+    </div>
+  </div>
+  
+  <div class="navigation">
+    <a routerLink="/signal-basics">← Back to Signal Basics</a>
+    <a routerLink="/effect">Next: Effects →</a>
+  </div>
+</div> 

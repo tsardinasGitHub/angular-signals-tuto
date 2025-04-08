@@ -1,0 +1,108 @@
+.user-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.user-info {
+  h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+
+  .email {
+    color: #666;
+    margin: 0 0 8px 0;
+    font-size: 14px;
+  }
+
+  .member-since {
+    color: #888;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .premium-badge {
+    display: inline-block;
+    background-color: #ffd700;
+    color: #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+}
+
+.actions {
+  button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid #5c6bc0;
+    background-color: #fff;
+    color: #5c6bc0;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #e8eaf6;
+    }
+
+    &.following {
+      background-color: #5c6bc0;
+      color: white;
+
+      &:hover {
+        background-color: #3f51b5;
+      }
+    }
+  }
+}
+
+.user-card-details {
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+  
+  .detail-row {
+    display: flex;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .detail-label {
+    width: 110px;
+    color: #777;
+  }
+  
+  .detail-value {
+    color: #333;
+    
+    &.premium-badge {
+      font-weight: 600;
+      color: #b86e00;
+    }
+  }
+} 

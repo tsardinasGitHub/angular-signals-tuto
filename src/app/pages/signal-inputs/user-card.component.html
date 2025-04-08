@@ -1,0 +1,15 @@
+<div class="user-card">
+  <div class="user-info">
+    <h3>{{ name() }}</h3>
+    <p class="email">{{ email() }}</p>
+    <p class="member-since">Member since: {{ joinDate() | date }}</p>
+    <div class="premium-badge" *ngIf="isPremium()">Premium</div>
+  </div>
+  <div class="actions">
+    <button 
+      [class.following]="isFollowing()" 
+      (click)="handleFollow()">
+      {{ isFollowing() ? 'Following' : 'Follow' }}
+    </button>
+  </div>
+</div> 
