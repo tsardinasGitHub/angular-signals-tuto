@@ -37,6 +37,18 @@ import { RouterLink } from '@angular/router';
           <p>Use signals for component inputs and two-way binding</p>
           <a routerLink="/signal-inputs" class="learn-more">Learn More →</a>
         </div>
+        
+        <div class="feature-card">
+          <h2>Signal Models</h2>
+          <p>Manage complex data models using signals for state management</p>
+          <a routerLink="/signal-models" class="learn-more">Learn More →</a>
+        </div>
+        
+        <div class="feature-card">
+          <h2>CSS Learning</h2>
+          <p>Learn about CSS Grid, Flexbox, and Variables</p>
+          <a routerLink="/css-learning" class="learn-more">Learn More →</a>
+        </div>
       </div>
     </div>
   `,
@@ -48,13 +60,14 @@ import { RouterLink } from '@angular/router';
     
     .hero-section {
       text-align: center;
-      padding: 40px 20px;
-      margin-bottom: 40px;
+      padding: 20px 20px;
+      margin-bottom: 20px;
     }
     
     .hero-section h1 {
       font-size: 2.5rem;
       color: #3f51b5;
+      margin-top: 0;
       margin-bottom: 16px;
     }
     
@@ -102,7 +115,7 @@ import { RouterLink } from '@angular/router';
     }
     
     .learn-more:hover {
-      color: #ff4081;
+      color: #ff9800;
     }
   `]
 })
